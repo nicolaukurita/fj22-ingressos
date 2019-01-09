@@ -1,6 +1,7 @@
 package br.com.caelum.ingresso.controller;
 
 import br.com.caelum.ingresso.dao.SalaDao;
+import br.com.caelum.ingresso.dao.SessaoDao;
 import br.com.caelum.ingresso.model.Sala;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,75 +19,73 @@ import java.util.Optional;
 @Controller
 public class SalaController {
 
-    @Autowired
-    private SalaDao salaDao;
+	@Autowired
+	private SalaDao salaDao;
 
+	@Autowired
+	private SessaoDao sessaoDao;
 
-    @GetMapping({"/admin/sala", "/admin/sala/{id}"})
-    public ModelAndView form(@PathVariable("id")Optional<Integer> id, Sala sala){
-        ModelAndView modelAndView = new ModelAndView("sala/sala");
+	@GetMapping({ "/admin/sala", "/admin/sala/{id}" })
+	public ModelAndView form(@PathVariable("id") Optional<Integer> id, Sala sala) {
+		ModelAndView modelAndView = new ModelAndView("sala/sala");
 
-        if (id.isPresent()){
-            sala = salaDao.findOne(id.get());
-        }
+		if (id.isPresent()) {
+			sala = salaDao.findOne(id.get());
+		}
 
-        modelAndView.addObject("sala", sala);
+		modelAndView.addObject("sala", sala);
 
-        return modelAndView;
-    }
+		return modelAndView;
+	}
 
+	@PostMapping("/admin/sala")
+	@Transactional
+	public ModelAndView salva(@Valid Sala sala, BindingResult result) {
 
+		if (result.hasErrors()) {
+			return form(Optional.ofNullable(sala.getId()), sala);
+		}
 
+		salaDao.save(sala);
+		return new ModelAndView("redirect:/admin/salas");
+	}
 
-    @PostMapping("/admin/sala")
-    @Transactional
-    public ModelAndView salva(@Valid Sala sala, BindingResult result){
+	@GetMapping("/admin/salas")
+	public ModelAndView lista() {
+		ModelAndView modelAndView = new ModelAndView("sala/lista");
 
-        if (result.hasErrors()){
-            return form(Optional.ofNullable(sala.getId()) ,sala);
-        }
+		modelAndView.addObject("salas", salaDao.findAll());
 
-        salaDao.save(sala);
-        return new ModelAndView("redirect:/admin/salas");
-    }
+		return modelAndView;
+	}
 
-    @GetMapping("/admin/salas")
-    public ModelAndView lista(){
-        ModelAndView modelAndView = new ModelAndView("sala/lista");
+	@GetMapping("/admin/sala/{id}/sessoes")
+	public ModelAndView listaSessoes(@PathVariable("id") Integer id) {
 
-        modelAndView.addObject("salas", salaDao.findAll());
+		Sala sala = salaDao.findOne(id);
 
-        return modelAndView;
-    }
+		ModelAndView view = new ModelAndView("sessao/lista");
+		view.addObject("sala", sala);
+		view.addObject("sessoes", sessaoDao.buscaSessoesDaSala(sala));
 
+		return view;
+	}
 
-    @GetMapping("/admin/sala/{id}/sessoes")
-    public ModelAndView listaSessoes(@PathVariable("id") Integer id) {
+	@GetMapping("/admin/sala/{id}/lugares/")
+	public ModelAndView listaLugares(@PathVariable("id") Integer id) {
 
-        Sala sala = salaDao.findOne(id);
+		ModelAndView modelAndView = new ModelAndView("lugar/lista");
 
-        ModelAndView view = new ModelAndView("sessao/lista");
-        view.addObject("sala", sala);
+		Sala sala = salaDao.findOne(id);
+		modelAndView.addObject("sala", sala);
 
-        return view;
-    }
+		return modelAndView;
+	}
 
-    @GetMapping("/admin/sala/{id}/lugares/")
-    public ModelAndView listaLugares(@PathVariable("id") Integer id) {
-
-        ModelAndView modelAndView = new ModelAndView("lugar/lista");
-
-        Sala sala = salaDao.findOne(id);
-        modelAndView.addObject("sala", sala);
-
-        return modelAndView;
-    }
-
-
-    @DeleteMapping("/admin/sala/{id}")
-    @ResponseBody
-    @Transactional
-    public void delete(@PathVariable("id") Integer id){
-        salaDao.delete(id);
-    }
+	@DeleteMapping("/admin/sala/{id}")
+	@ResponseBody
+	@Transactional
+	public void delete(@PathVariable("id") Integer id) {
+		salaDao.delete(id);
+	}
 }

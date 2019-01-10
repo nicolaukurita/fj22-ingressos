@@ -5,3 +5,4 @@ java efetivo
 domain driver design
 Liskov
 principio SOLID
+https://github.com/bors-ng/bors-ng

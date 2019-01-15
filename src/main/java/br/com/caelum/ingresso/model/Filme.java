@@ -70,6 +70,9 @@ public class Filme {
 	}
 
 	public BigDecimal getPreco() {
+		if (this.preco == null) {
+			return null;
+		}
 		return preco.setScale(2, RoundingMode.HALF_UP);
 	}
 

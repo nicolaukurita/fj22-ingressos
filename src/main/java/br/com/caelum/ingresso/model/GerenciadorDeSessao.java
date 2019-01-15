@@ -3,7 +3,6 @@ package br.com.caelum.ingresso.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class GerenciadorDeSessao {
 

@@ -27,6 +27,10 @@ public class Carrinho {
 				.reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
 	}
 
+	public Compra toCompra() {
+		return new Compra(ingressos);
+	}
+
 	public List<Ingresso> getIngressos() {
 		return ingressos;
 	}

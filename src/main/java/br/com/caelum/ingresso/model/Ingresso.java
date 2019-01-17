@@ -53,4 +53,12 @@ public class Ingresso {
 		return lugar;
 	}
 
+	public Sessao getSessao() {
+		return sessao;
+	}
+
+	public TipoDeIngresso getTipoDeIngresso() {
+		return tipoDeIngresso;
+	}
+
 }
